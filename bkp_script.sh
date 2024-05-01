@@ -7,7 +7,7 @@ start_time=$(date +%s)
 # Функция создания резервной копии БД ${db_name}
 backup_database() {
     local db_name=db"$1"
-    local backup_dir="/srv/hdd-storage/backup/${db_name}_$(date +'%Y-%m-%d')"
+    local backup_dir="/srv/backup/${db_name}_$(date +'%Y-%m-%d')"
 
     mkdir -p "$backup_dir"
 
@@ -23,10 +23,10 @@ archive() {
     local db_name=db"$1"
     local web_name="$1".ru
 
-    cd /srv/hdd-storage/backup/
-    tar -cf full_backup_${web_name}_$(date +'%Y%m%d--%H%M').tar --exclude='/srv/web-roots/${web_name}/www/bitrix/backup/' ${db_name}_$(date +'%Y-%m-%d') -C /srv/web-roots ${web_name}
-	find /srv/hdd-storage/backup/ -name ${db_name}_$(date +'%Y-%m-%d') -type d -exec rm -rf {} \;
-    find /srv/hdd-storage/backup/ -type f -name "full_backup_${web_name}_*.tar" ! -newermt '1 hours ago' -delete
+    cd /srv/backup/
+    tar -cf full_backup_${web_name}_$(date +'%Y%m%d--%H%M').tar --exclude='/srv/${web_name}/www/bitrix/backup/' ${db_name}_$(date +'%Y-%m-%d') -C /srv/ ${web_name}
+	find /srv/backup/ -name ${db_name}_$(date +'%Y-%m-%d') -type d -exec rm -rf {} \;
+    find /srv/backup/ -type f -name "full_backup_${web_name}_*.tar" ! -newermt '1 hours ago' -delete
 }
 
 backup_database "site1"
@@ -38,10 +38,10 @@ end_time=$(date +%s)
 duration_seconds=$((end_time - start_time))
 duration_minutes=$((duration_seconds / 60))
 
-echo "Start Time: $(date -d @$start_time)" >> /srv/hdd-storage/backup/execution_time.txt
-echo "End Time: $(date -d @$end_time)" >> /srv/hdd-storage/backup/execution_time.txt
+echo "Start Time: $(date -d @$start_time)" >> /srv/backup/execution_time.txt
+echo "End Time: $(date -d @$end_time)" >> /srv/backup/execution_time.txt
 echo "Duration: ${duration_minutes} min
-" >> /srv/hdd-storage/backup/execution_time.txt
+" >> /srv/backup/execution_time.txt
 
 
 
